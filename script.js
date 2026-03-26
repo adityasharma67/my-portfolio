@@ -214,7 +214,6 @@ class Particle {
     draw() {
         ctx.save();
         ctx.translate(this.x, this.y);
-        ctx.rotate(this.rotation);
         ctx.beginPath();
         const spikes = 5;
         const outerRadius = this.size * 2;
