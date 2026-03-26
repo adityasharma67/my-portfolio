@@ -173,6 +173,8 @@ class Particle {
         this.opacity = Math.random() * 0.5 + 0.2;
         this.twinkleSpeed = Math.random() * 0.02 + 0.005;
         this.twinkleDir = Math.random() > 0.5 ? 1 : -1;
+        this.rotation = 0;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.02;
     }
     update() {
         // Mouse repel effect
@@ -202,23 +204,40 @@ class Particle {
             this.twinkleDir = 1;
         }
 
+        // Rotation
+        this.rotation += this.rotationSpeed;
+
         if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
             this.reset();
         }
     }
     draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        const spikes = 5;
+        const outerRadius = this.size * 2;
+        const innerRadius = this.size;
+        for (let i = 0; i < spikes * 2; i++) {
+            const radius = i % 2 === 0 ? outerRadius : innerRadius;
+            const angle = (i * Math.PI) / spikes;
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
         ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
         ctx.shadowBlur = 4;
         ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
         ctx.fill();
-        ctx.shadowBlur = 0;
+        ctx.restore();
     }
 }
 
 // Create more particles for a starry sky
-for (let i = 0; i < 150; i++) {
+for (let i = 0; i < 200; i++) {
     particles.push(new Particle());
 }
 
