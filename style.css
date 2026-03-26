@@ -1482,44 +1482,8 @@ footer {
     box-shadow: 0 0 10px var(--accent-glow);
 }
 
-/* Custom Cursor */
-.cursor-dot {
-    width: 10px;
-    height: 10px;
-    background: var(--accent);
-    border-radius: 50%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 10000;
-    transform: translate(-5px, -5px);
-    transition: opacity 0.2s ease;
-}
-
-.cursor-ring {
-    width: 40px;
-    height: 40px;
-    border: 2px solid var(--accent);
-    border-radius: 50%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 10000;
-    transform: translate(-20px, -20px);
-    transition: transform 0.15s ease-out, opacity 0.2s ease, background-color 0.15s ease-out;
-    opacity: 1;
-}
-
-.cursor-ring.hover-active {
-    transform: translate(-20px, -20px) scale(1.5);
-    opacity: 0.2;
-    background: var(--accent-glow);
-}
-
-/* Particle Canvas */
-#particleCanvas {
+/* Starry Background Canvas */
+#starCanvas {
     position: fixed;
     top: 0;
     left: 0;
@@ -1527,6 +1491,7 @@ footer {
     height: 100vh;
     z-index: -1;
     pointer-events: none;
+    background: transparent;
 }
 
 /* Typing Cursor */

@@ -99,167 +99,105 @@ window.addEventListener('scroll', () => {
 });
 
 // =============================================
-// 6. Custom Cursor
+// 6. Starry Background Animation
 // =============================================
-const cursorDot = document.getElementById('cursorDot');
-const cursorRing = document.getElementById('cursorRing');
+const starCanvas = document.getElementById('starCanvas');
+const starCtx = starCanvas.getContext('2d');
+let stars = [];
 
-let mouseX = window.innerWidth / 2;
-let mouseY = window.innerHeight / 2;
-let ringX = mouseX;
-let ringY = mouseY;
-let isCursorVisible = false;
-
-cursorDot.style.opacity = '0';
-cursorRing.style.opacity = '0';
-
-if (window.matchMedia('(any-pointer: fine)').matches) {
-    document.addEventListener('mousemove', (e) => {
-        if (!isCursorVisible) {
-            cursorDot.style.opacity = '1';
-            cursorRing.style.opacity = '1';
-            isCursorVisible = true;
-            ringX = e.clientX;
-            ringY = e.clientY;
-        }
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        cursorDot.style.transform = `translate(${mouseX - 5}px, ${mouseY - 5}px)`;
-    });
-
-    function animateCursorRing() {
-        ringX += (mouseX - ringX) * 0.15;
-        ringY += (mouseY - ringY) * 0.15;
-        cursorRing.style.transform = `translate(${ringX - 20}px, ${ringY - 20}px)`;
-        requestAnimationFrame(animateCursorRing);
-    }
-    animateCursorRing();
-
-    // Grow cursor on interactive elements
-    const hoverTargets = document.querySelectorAll('a, button, .btn, .project-card, .cert-card, .skill-box, .theme-btn');
-    hoverTargets.forEach(target => {
-        target.addEventListener('mouseenter', () => cursorRing.classList.add('hover-active'));
-        target.addEventListener('mouseleave', () => cursorRing.classList.remove('hover-active'));
-    });
-} else {
-    cursorDot.style.display = 'none';
-    cursorRing.style.display = 'none';
+function resizeStarCanvas() {
+    starCanvas.width = window.innerWidth;
+    starCanvas.height = window.innerHeight;
 }
+resizeStarCanvas();
+window.addEventListener('resize', resizeStarCanvas);
 
-// =============================================
-// 7. Floating Particles
-// =============================================
-const canvas = document.getElementById('particleCanvas');
-const ctx = canvas.getContext('2d');
-let particles = [];
-
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
-
-class Particle {
+class Star {
     constructor() {
         this.reset();
     }
     reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 3 + 1;
-        this.speedX = (Math.random() - 0.5) * 0.2;
-        this.speedY = (Math.random() - 0.5) * 0.2;
-        this.opacity = Math.random() * 0.6 + 0.4;
-        this.twinkleSpeed = Math.random() * 0.02 + 0.005;
+        this.x = Math.random() * starCanvas.width;
+        this.y = Math.random() * starCanvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.05;
+        this.speedY = (Math.random() - 0.5) * 0.05;
+        this.opacity = Math.random() * 0.8 + 0.2;
+        this.twinkleSpeed = Math.random() * 0.01 + 0.005;
         this.twinkleDir = Math.random() > 0.5 ? 1 : -1;
-        this.rotation = 0;
-        this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+        this.baseOpacity = this.opacity;
     }
     update() {
-        // Mouse repel effect
-        let dx = 0, dy = 0, distance = 1000;
-        if (typeof mouseX !== 'undefined') {
-            dx = mouseX - this.x;
-            dy = mouseY - this.y;
-            distance = Math.sqrt(dx * dx + dy * dy);
-        }
-        
-        if (distance < 120) {
-            const force = (120 - distance) / 120;
-            this.x -= (dx / distance) * force * 2;
-            this.y -= (dy / distance) * force * 2;
-        } else {
-            this.x += this.speedX;
-            this.y += this.speedY;
-        }
-        
+        this.x += this.speedX;
+        this.y += this.speedY;
+
         // Twinkle effect
         this.opacity += this.twinkleSpeed * this.twinkleDir;
-        if (this.opacity >= 1) {
-            this.opacity = 1;
+        if (this.opacity >= this.baseOpacity + 0.3) {
+            this.opacity = this.baseOpacity + 0.3;
             this.twinkleDir = -1;
-        } else if (this.opacity <= 0.1) {
-            this.opacity = 0.1;
+        } else if (this.opacity <= this.baseOpacity - 0.2) {
+            this.opacity = this.baseOpacity - 0.2;
             this.twinkleDir = 1;
         }
 
-        // Rotation
-        this.rotation += this.rotationSpeed;
-
-        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
-            this.reset();
-        }
+        // Wrap around edges
+        if (this.x < 0) this.x = starCanvas.width;
+        if (this.x > starCanvas.width) this.x = 0;
+        if (this.y < 0) this.y = starCanvas.height;
+        if (this.y > starCanvas.height) this.y = 0;
     }
     draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y);
+        starCtx.save();
+        starCtx.globalAlpha = this.opacity;
+        starCtx.fillStyle = '#ffffff';
+        starCtx.shadowBlur = 2;
+        starCtx.shadowColor = '#ffffff';
+
+        // Draw star shape
+        starCtx.beginPath();
         const spikes = 5;
-        const outerRadius = this.size * 2;
-        const innerRadius = this.size;
+        const outerRadius = this.size;
+        const innerRadius = this.size * 0.4;
         let rot = Math.PI / 2 * 3;
         let step = Math.PI / spikes;
-        ctx.beginPath();
-        ctx.moveTo(0, -outerRadius);
+
+        starCtx.moveTo(this.x, this.y - outerRadius);
         for (let i = 0; i < spikes; i++) {
-            let x = Math.cos(rot) * outerRadius;
-            let y = Math.sin(rot) * outerRadius;
-            ctx.lineTo(x, y);
+            let x = this.x + Math.cos(rot) * outerRadius;
+            let y = this.y + Math.sin(rot) * outerRadius;
+            starCtx.lineTo(x, y);
             rot += step;
-            x = Math.cos(rot) * innerRadius;
-            y = Math.sin(rot) * innerRadius;
-            ctx.lineTo(x, y);
+            x = this.x + Math.cos(rot) * innerRadius;
+            y = this.y + Math.sin(rot) * innerRadius;
+            starCtx.lineTo(x, y);
             rot += step;
         }
-        ctx.lineTo(0, -outerRadius);
-        ctx.closePath();
-        ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-        ctx.shadowBlur = 4;
-        ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
-        ctx.fill();
-        ctx.restore();
+        starCtx.closePath();
+        starCtx.fill();
+        starCtx.restore();
     }
 }
 
-// Create more particles for a starry sky
-for (let i = 0; i < 200; i++) {
-    particles.push(new Particle());
+// Create stars
+for (let i = 0; i < 150; i++) {
+    stars.push(new Star());
 }
 
-function animateParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+function animateStars() {
+    starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
 
-    particles.forEach(p => {
-        p.update();
-        p.draw();
+    stars.forEach(star => {
+        star.update();
+        star.draw();
     });
 
-    requestAnimationFrame(animateParticles);
+    requestAnimationFrame(animateStars);
 }
-animateParticles();
+animateStars();
 
 // =============================================
-// 8. Back to Top Button
+// 7. Back to Top Button
 // =============================================
 const backToTop = document.getElementById('backToTop');
 window.addEventListener('scroll', () => {
@@ -275,7 +213,7 @@ backToTop.addEventListener('click', () => {
 });
 
 // =============================================
-// 9. Active Nav Link on Scroll
+// 8. Active Nav Link on Scroll
 // =============================================
 const sections = document.querySelectorAll('section[id]');
 const navLinksAll = document.querySelectorAll('.nav-links a[href^="#"]');
@@ -298,7 +236,7 @@ window.addEventListener('scroll', () => {
 });
 
 // =============================================
-// 10. Tilt Effect on Skill Boxes
+// 9. Tilt Effect on Skill Boxes
 // =============================================
 document.querySelectorAll('.skill-box').forEach(card => {
     card.addEventListener('mousemove', (e) => {
@@ -317,7 +255,7 @@ document.querySelectorAll('.skill-box').forEach(card => {
 });
 
 // =============================================
-// 11. Magnetic Button Effect
+// 10. Magnetic Button Effect
 // =============================================
 document.querySelectorAll('.btn').forEach(btn => {
     btn.addEventListener('mousemove', (e) => {
@@ -332,7 +270,7 @@ document.querySelectorAll('.btn').forEach(btn => {
 });
 
 // =============================================
-// 12. Smooth Section Scroll (Enhanced)
+// 11. Smooth Section Scroll (Enhanced)
 // =============================================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
