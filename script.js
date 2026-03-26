@@ -167,10 +167,10 @@ class Particle {
     reset() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 1.5 + 0.5;
+        this.size = Math.random() * 3 + 1;
         this.speedX = (Math.random() - 0.5) * 0.2;
         this.speedY = (Math.random() - 0.5) * 0.2;
-        this.opacity = Math.random() * 0.5 + 0.2;
+        this.opacity = Math.random() * 0.6 + 0.4;
         this.twinkleSpeed = Math.random() * 0.02 + 0.005;
         this.twinkleDir = Math.random() > 0.5 ? 1 : -1;
         this.rotation = 0;
