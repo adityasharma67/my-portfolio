@@ -104,8 +104,8 @@ window.addEventListener('scroll', () => {
 const cursorDot = document.getElementById('cursorDot');
 const cursorRing = document.getElementById('cursorRing');
 
-let mouseX = -100;
-let mouseY = -100;
+let mouseX = window.innerWidth / 2;
+let mouseY = window.innerHeight / 2;
 let ringX = mouseX;
 let ringY = mouseY;
 let isCursorVisible = false;
@@ -124,15 +124,13 @@ if (window.matchMedia('(any-pointer: fine)').matches) {
         }
         mouseX = e.clientX;
         mouseY = e.clientY;
-        cursorDot.style.left = mouseX - 5 + 'px';
-        cursorDot.style.top = mouseY - 5 + 'px';
+        cursorDot.style.transform = `translate(${mouseX - 5}px, ${mouseY - 5}px)`;
     });
 
     function animateCursorRing() {
         ringX += (mouseX - ringX) * 0.15;
         ringY += (mouseY - ringY) * 0.15;
-        cursorRing.style.left = ringX - 20 + 'px';
-        cursorRing.style.top = ringY - 20 + 'px';
+        cursorRing.style.transform = `translate(${ringX - 20}px, ${ringY - 20}px)`;
         requestAnimationFrame(animateCursorRing);
     }
     animateCursorRing();
