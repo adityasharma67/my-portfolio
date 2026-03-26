@@ -212,12 +212,32 @@ class Particle {
         }
     }
     draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        const spikes = 5;
+        const outerRadius = this.size * 2;
+        const innerRadius = this.size;
+        let rot = Math.PI / 2 * 3;
+        let step = Math.PI / spikes;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.moveTo(0, -outerRadius);
+        for (let i = 0; i < spikes; i++) {
+            let x = Math.cos(rot) * outerRadius;
+            let y = Math.sin(rot) * outerRadius;
+            ctx.lineTo(x, y);
+            rot += step;
+            x = Math.cos(rot) * innerRadius;
+            y = Math.sin(rot) * innerRadius;
+            ctx.lineTo(x, y);
+            rot += step;
+        }
+        ctx.lineTo(0, -outerRadius);
+        ctx.closePath();
         ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
         ctx.shadowBlur = 4;
         ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
         ctx.fill();
+        ctx.restore();
     }
 }
 
