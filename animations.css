@@ -1,0 +1,53 @@
+.floating {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translatey(0); }
+    50% { transform: translatey(-10px); }
+    100% { transform: translatey(0); }
+}
+
+.gradient-text {
+    background: linear-gradient(90deg, #ff007a, #9f00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 48px;
+}
+
+.parallax {
+    /* Adjust your background image and speed */
+    background-image: url('path/to/your/image.jpg');
+    height: 100vh;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.blob {
+    width: 200px;
+    height: 200px;
+    background: #007bff;
+    border-radius: 50%;
+    position: relative;
+    animation: morph 8s infinite;
+}
+
+@keyframes morph {
+    0%, 100% { border-radius: 50%; }
+    25% { border-radius: 60% 40% 50% 50%; }
+    50% { border-radius: 40% 50% 50% 60%; }
+    75% { border-radius: 50% 50% 60% 40%; }
+}
+
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.scroll-reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
